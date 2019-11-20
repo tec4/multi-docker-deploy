@@ -1,0 +1,23 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t ericwatts/multi-docker-deploy -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true ericwatts/multi-docker-deploy npm test
+
+after_success:
+  - docker build -t ericwatts/multi-docker-deploy-client ./client
+  - docker build -t ericwatts/multi-docker-deploy-nginx ./nginx
+  - docker build -t ericwatts/multi-docker-deploy-server ./server
+  - docker build -t ericwatts/multi-docker-deploy-worker ./worker
+  # Log into the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those docker images and push them to Docker Hub
+  - docker push ericwatts/multi-docker-deploy-client
+  - docker push ericwatts/multi-docker-deploy-nginx
+  - docker push ericwatts/multi-docker-deploy-server
+  - docker push ericwatts/multi-docker-deploy-worker
