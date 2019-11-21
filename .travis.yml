@@ -21,3 +21,16 @@ after_success:
   - docker push ericwatts/multi-docker-deploy-nginx
   - docker push ericwatts/multi-docker-deploy-server
   - docker push ericwatts/multi-docker-deploy-worker
+
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: "us-west-2"
+  app: "multi-docker"
+  env: "MultiDocker-env"
+  bucket_name: "elasticbeanstalk-us-west-2-296688327412"
+  bucket_path: "docker-multi"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
